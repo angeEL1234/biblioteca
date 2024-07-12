@@ -3,7 +3,7 @@
     {{ super() }}
     <title>
         {% block title %}
-        Biblioteca web App
+            Biblioteca Web App
         {% endblock %}
     </title>
     <link rel="stylesheet" href="../static/style/style.css">
@@ -15,9 +15,10 @@
     {% endblock %}
 
     {% block content %}
-        <img src="../static/assets/pexels-pixabay-159711 (1).jpg" alt="Libros de estanteria">
+    <div class="container-md">
+        <img src="../static/assets/pexels-pixabay-159711 (1).jpg" alt="Libro de biblioteca">
+    </div>
+
     {% endblock %}
 
 {% endblock %}
-
-
