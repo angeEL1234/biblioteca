@@ -4,13 +4,16 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms.fields import PasswordField, StringField, SubmitField
 
-
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
 @app.route('/')
 def index():
     return render_template('base.html')
+
+@app.errorhandler(404)
+def error404(error):
+    return render_template('404.html')
 
 @app.route('/libro')
 def libros():
@@ -22,13 +25,13 @@ def libros():
         host="localhost",
         port="5432"
     )
-    # crear un cursor (objeto para recorrer las tablas)
+    # Crear un cursor (objeto para recorrer las tablas)
     cursor = conexion.cursor()
-    # ejecutar una consulta en postgres
+    # Ejecutar una consulta en postgres
     cursor.execute('''SELECT * FROM libros_view''')
-    #recuperar la informacion
+    # Recuperar la información
     datos = cursor.fetchall()
-    #cerrar cursos y conexion a la base de datos
+    # Cerrar cursor y conexión a la base de datos
     cursor.close()
     conexion.close()
     return render_template('libro.html', datos=datos)
@@ -43,13 +46,13 @@ def autores():
         host="localhost",
         port="5432"
     )
-    # crear un cursor (objeto para recorrer las tablas)
+    # Crear un cursor (objeto para recorrer las tablas)
     cursor = conexion.cursor()
-    # ejecutar una consulta en postgres
+    # Ejecutar una consulta en postgres
     cursor.execute('''SELECT * FROM autores_view''')
-    #recuperar la informacion
+    # Recuperar la información
     datos = cursor.fetchall()
-    #cerrar cursos y conexion a la base de datos
+    # Cerrar cursor y conexión a la base de datos
     cursor.close()
     conexion.close()
     return render_template('autores.html', datos=datos)
@@ -64,21 +67,19 @@ def paises():
         host="localhost",
         port="5432"
     )
-    # crear un cursor (objeto para recorrer las tablas)
+    # Crear un cursor (objeto para recorrer las tablas)
     cursor = conexion.cursor()
-    # ejecutar una consulta en postgres
-    cursor.execute('''SELECT * FROM pais''')
-    #recuperar la informacion
+    # Ejecutar una consulta en postgres
+    cursor.execute('''SELECT * FROM pais ORDER BY id_pais''')
+    # Recuperar la información
     datos = cursor.fetchall()
-    #cerrar cursos y conexion a la base de datos
+    # Cerrar cursor y conexión a la base de datos
     cursor.close()
     conexion.close()
     return render_template('paises.html', datos=datos)
 
 @app.route('/delete_pais/<int:id_pais>', methods=['POST'])
 def delete_pais(id_pais):
-    # Tu lógica para eliminar un país
-    pass
     # Conectar con la base de datos
     conexion = psycopg2.connect(
         database="biblioteca3A",
@@ -87,11 +88,10 @@ def delete_pais(id_pais):
         host="localhost",
         port="5432"
     )
-    # crear un cursor (objeto para recorrer las tablas)
+    # Crear un cursor (objeto para recorrer las tablas)
     cursor = conexion.cursor()
-
-    cursor.execute('''DELETE FROM pais WHERE id_pais=%s''',
-                   (id_pais,))
+    # Borrar el registro con el id_pais seleccionado
+    cursor.execute('''DELETE FROM pais WHERE id_pais=%s''', (id_pais,))
     conexion.commit()
     cursor.close()
     conexion.close()
@@ -99,8 +99,6 @@ def delete_pais(id_pais):
 
 @app.route('/update1_pais/<int:id_pais>', methods=['POST'])
 def update1_pais(id_pais):
-    # Tu lógica para eliminar un país
-    pass
     # Conectar con la base de datos
     conexion = psycopg2.connect(
         database="biblioteca3A",
@@ -109,11 +107,23 @@ def update1_pais(id_pais):
         host="localhost",
         port="5432"
     )
-    # crear un cursor (objeto para recorrer las tablas)
+    # Crear un cursor (objeto para recorrer las tablas)
     cursor = conexion.cursor()
-    cursor.execute('''DELETE FROM pais WHERE id_pais=%s''',
-                   (id_pais,))
-    conexion.commit()
+    # Recuperar el registro del id_pais seleccionado
+    cursor.execute('''SELECT * FROM pais WHERE id_pais=%s''', (id_pais,))
+    datos = cursor.fetchall()
     cursor.close()
     conexion.close()
-    return redirect(url_for('update2'))
+    return render_template('editar_pais', datos=datos)
+
+@app.route('/update2_pais/<int:id_pais>', methods=['POST'])
+def update2_pais(id_pais):
+    # Conectar con la base de datos
+    conexion = psycopg2.connect(
+        database="biblioteca3A",
+        user="postgres",
+        password="perro12345",
+        host="localhost",
+        port="5432"
+    )
+
